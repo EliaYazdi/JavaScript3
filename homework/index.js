@@ -33,14 +33,29 @@
   function main(url) {
     fetchJSON(url, (err, repositories) => {
       const root = document.getElementById('root');
+      console.log(err, repositories)
       if (err) {
-        createAndAppend('div', root, { text: err.message, class: 'alert-error' });
+        //createAndAppend('div', root, { text: err.message, class: 'alert-error' });
+        const div = document.createElement('div')
+        div.textContent = err.message
+        div.setAttribute('class', 'alert-error')
+        //div.classList = "alert-error"
+        root.appendChild(div)
         return;
       }
-      createAndAppend('pre', root, { text: JSON.stringify(repositories, null, 2) });
+      //createAndAppend('pre', root, { text: JSON.stringify(repositories, null, 2) });
+      const repoList = createAndAppend('ul', root, { class: "repo-list" });
+      repositories.forEach(repo => {
+        //console.log(repo.name)
+        const repoItem = createAndAppend('li', repoList, { text: repo.name })
+        repoItem.addEventListener('click', () => {
+          console.log("clicked", repo.name)
+          createAndAppend('div', root, { text: "here" })
+        })
+      })
     });
   }
 
-  const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
+  const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=30';
   window.onload = () => main(HYF_REPOS_URL);
 }
