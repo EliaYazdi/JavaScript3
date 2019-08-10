@@ -59,3 +59,15 @@
   const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=30';
   window.onload = () => main(HYF_REPOS_URL);
 }
+
+/*fetch('https://api.github.com/orgs/HackYourFuture/repos?per_page=100')
+  .then(result => {
+    console.log(result);
+    return result.json();
+  })
+  .then(data => {
+    //console.log(data);
+    const angular = data[0];
+    console.log(angular);
+  })
+  .catch(error => console.log(error));*/

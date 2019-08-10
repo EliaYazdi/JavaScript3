@@ -17,13 +17,16 @@
 
 <body>
   <h1 class="h1">Hack your future Reositories</h1>
-  <h2>Pick a Repository</h2>
-  <div id="repoList">
-    <select id="select">
-      <option value="">
-      </option>
+  <form>
+    Select your favorite repository from the list:
+    <select id='repoList' onchange='main(HYF_REPOS_URL)'>
+      <option>Angular</option>
+      <option>Authentication</option>
+      <option>Data Structure</option>
+      <option>Command Line</option>
     </select>
-  </div>
+  </form>
+
   <div id="root"></div>
   <script src="./index.js"></script>
 </body>
