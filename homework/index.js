@@ -29,7 +29,7 @@
     });
     return elem;
   }
-
+  //get repos
   function main(url) {
     fetchJSON(url, (err, repositories) => {
       const root = document.getElementById('root');
@@ -44,17 +44,21 @@
         return;
       }
       //createAndAppend('pre', root, { text: JSON.stringify(repositories, null, 2) });
-      const repoList = createAndAppend('ul', root, { class: "repo-list" });
+      const repoList = createAndAppend('div', root, { class: "repo-list" });
+      const select = createAndAppend('select', repoList, { text: 'choose the repo' })
       repositories.forEach(repo => {
         //console.log(repo.name)
-        const repoItem = createAndAppend('li', repoList, { text: repo.name })
-        repoItem.addEventListener('click', () => {
+        createAndAppend('option', select, { text: repo.name })
+        select.addEventListener('change', () => {
           console.log("clicked", repo.name)
           createAndAppend('div', root, { text: "here" })
         })
       })
     });
   }
+
+  //get contributors
+
 
   const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=30';
   window.onload = () => main(HYF_REPOS_URL);
