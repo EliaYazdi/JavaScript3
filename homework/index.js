@@ -31,47 +31,57 @@
   }
   //get repos
   function main(url) {
-    fetchJSON(url, (err, repositories) => {
+    fetchJSON(url, (err, data) => {
       const root = document.getElementById('root');
-      console.log(err, repositories)
       if (err) {
-        //createAndAppend('div', root, { text: err.message, class: 'alert-error' });
-        const div = document.createElement('div')
-        div.textContent = err.message
-        div.setAttribute('class', 'alert-error')
-        //div.classList = "alert-error"
-        root.appendChild(div)
-        return;
+        createAndAppend('div', root, { text: err.message, class: 'alert-error' });
+      } else {
+        //createAndAppend('pre', root, { text: JSON.stringify(data, null, 2) });
+        const select = createAndAppend('select', root, { class: 'select' });
+        createAndAppend('option', select, { text: 'Choose your favorite repo' });
+        data.forEach(repo => {
+          const name = repo.name;
+          createAndAppend('option', select, { text: name });
+        });
+
+        const repoInfo = createAndAppend('div', root);
+        const contribs = createAndAppend('div', root);
+        select.addEventListener('change', evt => {
+          const selectedRepo = evt.target.value;
+          const repo = data.filter(r => r.name == selectedRepo)[0];
+          console.log(repo);
+          repoInfo.innerHTML = '';
+          contribs.innerHTML = '';
+
+
+
+          const addInfo = (label, value) => {
+            const container = createAndAppend('div', repoInfo);
+            createAndAppend('span', container, { text: label });
+            createAndAppend('span', container, { text: value });
+          };
+          addInfo('Name: ', repo.name);
+          addInfo('Desciption: ', repo.description);
+          addInfo('Number of forks: ', repo.forks);
+          addInfo('Updated: ', repo.updated_at);
+          //or instead of using the addInfo function we can use these lines:
+          // createAndAppend('div', repoInfo, { text: `Descriptions: ${repo.description}` });
+          // createAndAppend('div', repoInfo, { text: `Number of Forks: ${repo.forks}` });
+          // createAndAppend('div', repoInfo, { text: `Updated at:${repo.updated_at}` });
+          const contribsUrl = repo.contributors_url;
+          fetchJSON(contribsUrl, (err, contribData) => {
+            contribData.forEach(contributor => {
+
+              createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
+              createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
+            });
+          });
+        });
       }
-      //createAndAppend('pre', root, { text: JSON.stringify(repositories, null, 2) });
-      const repoList = createAndAppend('div', root, { class: "repo-list" });
-      const select = createAndAppend('select', repoList, { text: 'choose the repo' })
-      repositories.forEach(repo => {
-        //console.log(repo.name)
-        createAndAppend('option', select, { text: repo.name })
-        select.addEventListener('change', () => {
-          console.log("clicked", repo.name)
-          createAndAppend('div', root, { text: "here" })
-        })
-      })
     });
   }
 
-  //get contributors
+  const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
 
-
-  const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=30';
   window.onload = () => main(HYF_REPOS_URL);
 }
-
-/*fetch('https://api.github.com/orgs/HackYourFuture/repos?per_page=100')
-  .then(result => {
-    console.log(result);
-    return result.json();
-  })
-  .then(data => {
-    //console.log(data);
-    const angular = data[0];
-    console.log(angular);
-  })
-  .catch(error => console.log(error));*/
