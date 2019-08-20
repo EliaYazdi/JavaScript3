@@ -37,16 +37,18 @@
         createAndAppend('div', root, { text: err.message, class: 'alert-error' });
       } else {
         //createAndAppend('pre', root, { text: JSON.stringify(data, null, 2) });
-        const select = createAndAppend('select', root, { class: 'select' });
+        const header = createAndAppend('header', root, { class: 'header' });
+        const h1 = createAndAppend('h1', header, { text: 'FooCoding Repos', class: 'h1' });
+        const select = createAndAppend('select', header, { class: 'select' });
         createAndAppend('option', select, { text: 'Choose your favorite repo' });
         data.forEach(repo => {
           const name = repo.name;
           createAndAppend('option', select, { text: name });
         });
-
-        const repoInfo = createAndAppend('div', root);
-        const contribs = createAndAppend('div', root);
-        select.addEventListener('change', evt => {
+        const container = createAndAppend('div', root, { class: 'container' });
+        const repoInfo = createAndAppend('div', container, { class: 'left-div' });
+        const contribs = createAndAppend('div', container, { class: 'right-div' });
+        select.onchange = evt => {
           const selectedRepo = evt.target.value;
           const repo = data.filter(r => r.name == selectedRepo)[0];
           console.log(repo);
@@ -56,9 +58,9 @@
 
 
           const addInfo = (label, value) => {
-            const container = createAndAppend('div', repoInfo);
-            createAndAppend('span', container, { text: label });
-            createAndAppend('span', container, { text: value });
+            const repoContainer = createAndAppend('div', repoInfo);
+            createAndAppend('span', repoContainer, { text: label });
+            createAndAppend('span', repoContainer, { text: value });
           };
           addInfo('Name: ', repo.name);
           addInfo('Desciption: ', repo.description);
@@ -69,14 +71,21 @@
           // createAndAppend('div', repoInfo, { text: `Number of Forks: ${repo.forks}` });
           // createAndAppend('div', repoInfo, { text: `Updated at:${repo.updated_at}` });
           const contribsUrl = repo.contributors_url;
-          fetchJSON(contribsUrl, (err, contribData) => {
-            contribData.forEach(contributor => {
+          fetchJSON(contribsUrl, (err, contributors) => {
+            contributors.forEach(contributor => {
 
-              createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
-              createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
+              const contribNames = createAndAppend('a', contribs, { text: contributor.login, class: 'contributor' })
+              contribNames.href = contributor.html_url;
+              contribNames.onclick = () => window.open(contributor.html_url)
+
+
+
+
+              createAndAppend('div', contribs, { text: contributor.contributions, class: 'contributions' })
+              createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, width: 100, id: 'img' })
             });
           });
-        });
+        };
       }
     });
   }

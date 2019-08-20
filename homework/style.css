@@ -8,16 +8,41 @@ body {
 }
 #root {
   display: flex;
+   flex-direction: column;
+  align-items: flex-start;
     justify-content: center;
+}
+.header {
+  background-color: #444;
+  width: 100%;
 }
 .h1 {
   text-align: center;
-  background-color: antiquewhite;
 
 }
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  margin: 1 rem;
+}
+.left-div {
+  padding: 16px;
+  margin-right: 16px;
+  background-color: beige;
+  flex-direction: column;
+  align-items: flex-start;
+}
 
+
+.right-div {
+ flex: column;
+ background-color: beige;
+
+}
 .select {
-    display: block;
+    display: flex;
+    flex-direction: row;
     font-size: 16px;
     font-family: sans-serif;
     font-weight: 700;
@@ -39,28 +64,21 @@ body {
   
 }
 
-@media (min-width: 1281px) {
-
-}
-
-@media (min-width: 1025px) and (max-width: 1280px) {
-  
-}
-
-@media (min-width: 768px) and (max-width: 1024px) {
-  
+.contributions {
+  background-color: #aaa
 }
 
 
-@media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) {
-
-}
-
-
-@media (min-width: 481px) and (max-width: 767px) {
-}
-
-
-@media (min-width: 320px) and (max-width: 480px) {
-
+@media (max-width: 767px){
+  body {
+    width: 100%;
+  }
+  .container {
+    margin: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .left-div {
+    margin: 0;
+  }
 }
