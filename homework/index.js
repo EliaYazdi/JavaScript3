@@ -73,16 +73,16 @@
           const contribsUrl = repo.contributors_url;
           fetchJSON(contribsUrl, (err, contributors) => {
             contributors.forEach(contributor => {
-
-              const contribNames = createAndAppend('a', contribs, { text: contributor.login, class: 'contributor' })
+              const eachContrib = createAndAppend('div', contribs, { class: 'eachcontrib' })
+              const contribNames = createAndAppend('a', eachContrib, { text: contributor.login, class: 'contributor' })
               contribNames.href = contributor.html_url;
               contribNames.onclick = () => window.open(contributor.html_url)
 
 
 
 
-              createAndAppend('div', contribs, { text: contributor.contributions, class: 'contributions' })
-              createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, width: 100, id: 'img' })
+              createAndAppend('span', eachContrib, { text: contributor.contributions, class: 'contributions' })
+              createAndAppend('img', eachContrib, { src: contributor.avatar_url, height: 100, width: 100, id: 'img' })
             });
           });
         };
