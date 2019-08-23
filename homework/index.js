@@ -36,7 +36,7 @@
       if (err) {
         createAndAppend('div', root, { text: err.message, class: 'alert-error' });
       } else {
-
+        //createAndAppend('pre', root, { text: JSON.stringify(data, null, 2) });
         const header = createAndAppend('header', root, { class: 'header' });
         const h1 = createAndAppend('h1', header, { text: 'FooCoding Repos', class: 'h1' });
         const select = createAndAppend('select', header, { class: 'select' });
@@ -48,7 +48,7 @@
         const container = createAndAppend('div', root, { class: 'container' });
         const repoInfo = createAndAppend('div', container, { class: 'left-div' });
         const contribs = createAndAppend('div', container, { class: 'right-div' });
-        select.addEventListener('change', evt => {
+        select.onchange = evt => {
           const selectedRepo = evt.target.value;
           const repo = data.filter(r => r.name == selectedRepo)[0];
           console.log(repo);
@@ -66,13 +66,9 @@
           addInfo('Desciption: ', repo.description);
           addInfo('Number of forks: ', repo.forks);
           addInfo('Updated: ', repo.updated_at);
-          //or instead of using the addInfo function we can use these lines:
-          // createAndAppend('div', repoInfo, { text: `Descriptions: ${repo.description}` });
-          // createAndAppend('div', repoInfo, { text: `Number of Forks: ${repo.forks}` });
-          // createAndAppend('div', repoInfo, { text: `Updated at:${repo.updated_at}` });
+
           const contribsUrl = repo.contributors_url;
           fetchJSON(contribsUrl, (err, contributors) => {
-            const root = document.getElementById('root');
             if (err) {
               createAndAppend('div', root, { text: err.message, class: 'alert-error' });
             } else {
@@ -80,23 +76,19 @@
                 const eachContrib = createAndAppend('div', contribs, { class: 'eachcontrib' })
                 const contribNames = createAndAppend('a', eachContrib, { text: contributor.login, class: 'contributor' })
                 contribNames.href = contributor.html_url;
-                contribNames.onclick = () => window.open(contributor.html_url)
-
-
-
 
                 createAndAppend('span', eachContrib, { text: contributor.contributions, class: 'contributions' })
                 createAndAppend('img', eachContrib, { src: contributor.avatar_url, height: 100, width: 100, id: 'img' })
+              })
 
-              });
             };
           });
-        })
-      };
-    })
+        };
+      }
+    });
+  }
 
-    const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
+  const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
 
-    window.onload = () => main(HYF_REPOS_URL);
-  
-  })
+  window.onload = () => main(HYF_REPOS_URL);
+}
