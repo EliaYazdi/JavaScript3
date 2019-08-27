@@ -69,9 +69,6 @@
             addInfo('Updated: ', repo.updated_at)
             const contribsUrl = repo.contributors_url;
             fetchJSON(contribsUrl)
-              .then(data => {
-                data.sort((a, b) => (a.contribs.toLowerCase() > b.contribs.toLowerCase()));
-              })
               .then(data.forEach(contributor => {
 
                 createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
@@ -87,9 +84,9 @@
 
 
       })
-  }
-}
-const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
 
-window.onload = () => main(HYF_REPOS_URL);
+  }
+  const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
+
+  window.onload = () => main(HYF_REPOS_URL);
 }
