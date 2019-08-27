@@ -70,13 +70,13 @@
             const contribsUrl = repo.contributors_url;
             fetchJSON(contribsUrl)
               .then(data => {
-                data.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase());
+                data.sort((a, b) => (a.contribs.toLowerCase() > b.contribs.toLowerCase()));
               })
-            data.forEach(contributor => {
+              .then(data.forEach(contributor => {
 
-              createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
-              createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
-            })
+                createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
+                createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
+              }))
           })
 
 
@@ -88,7 +88,7 @@
 
       })
   }
-})
+}
 const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
 
 window.onload = () => main(HYF_REPOS_URL);
