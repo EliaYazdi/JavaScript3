@@ -1,20 +1,22 @@
 'use strict';
 
 {
-  function fetchJSON(url, cb) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url);
-    xhr.responseType = 'json';
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status <= 299) {
-        cb(null, xhr.response);
-      } else {
-        cb(new Error(`Network error: ${xhr.status} - ${xhr.statusText}`));
-      }
-    };
-    xhr.onerror = () => cb(new Error('Network request failed'));
-    xhr.send();
+  function fetchJson(url) {
+    return new promise((resolve, reject) => {
+      const xhr = newXMLHTTPRequest();
+      xhr.open('GET', url);
+      xhr.responseType = 'json';
+      xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status <= 299) {
+          resolve(xhr.response)
+        } else {
+          reject(Error('Network request failed'));
+        }
+      };
+      xhr.send();
+    });
   }
+
 
   function createAndAppend(name, parent, options = {}) {
     const elem = document.createElement(name);
@@ -30,10 +32,11 @@
     return elem;
   }
 
-
   function main(url) {
     fetch(url)
-      .then(data => data.json())
+      .then(data => {
+        data.json()
+      })
 
       .then(json => {
         console.log(json)
@@ -65,25 +68,28 @@
             addInfo('Number of forks: ', repo.forks);
             addInfo('Updated: ', repo.updated_at)
             const contribsUrl = repo.contributors_url;
-            fetchJSON(contribsUrl, (err, contribData) => {
-              contribData.forEach(contributor => {
-
-                createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
-                createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
+            fetchJSON(contribsUrl)
+              .then(data => {
+                data.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase());
               })
+            data.forEach(contributor => {
+
+              createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
+              createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
             })
-
-
-              .catch(err => {
-                createAndAppend('div', root, { text: err.message, class: 'alert-error' });
-              });
           })
 
 
+            .catch(err => {
+              createAndAppend('div', root, { text: err.message, class: 'alert-error' });
+            });
         })
+
+
       })
   }
-  const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
+})
+const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
 
-  window.onload = () => main(HYF_REPOS_URL);
+window.onload = () => main(HYF_REPOS_URL);
 }
