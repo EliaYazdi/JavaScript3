@@ -38,7 +38,7 @@
       .then((jsonData) => {
         jsonData.forEach(contributor => {
           createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
-          createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
+          createAndAppend('img', contribs, { src: contributor.avatar_url, height: 150, widtth: 150, id: 'img' })
           createAndAppend('div', contribs, { text: contributor.contributions })
         })
       })
@@ -48,6 +48,15 @@
       })
 
   }
+  function compare(a, b) {
+    if (a.name < b.name) {
+      return -1;
+    }
+    if (a.name > b.name) {
+      return 1
+    }
+    return 0;
+  }
 
   function main(url) {
     fetch(url)
@@ -56,19 +65,21 @@
         const root = document.getElementById('root');
         const select = createAndAppend('select', root, { class: 'select' });
         createAndAppend('option', select, { text: 'Choose your favorite repo' });
-        json.forEach(repo => {
+        let sorted = json.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()));
+        sorted.forEach(repo => {
           const name = repo.name;
           createAndAppend('option', select, { text: name });
         })
-        const repoInfo = createAndAppend('div', root);
-        const contribs = createAndAppend('div', root);
+        const wraper = createAndAppend('div', root, { class: 'wraper' });
+        const repoInfo = createAndAppend('div', wraper, { class: 'repoinfo' });
+        const contribs = createAndAppend('div', wraper, { class: 'contribs' });
         select.addEventListener('change', evt => {
           const selectedRepo = evt.target.value;
           const repo = json.filter(r => r.name == selectedRepo)[0];
           repoInfo.innerHTML = '';
           contribs.innerHTML = '';
           const addInfo = (label, value) => {
-            const container = createAndAppend('div', repoInfo);
+            const container = createAndAppend('div', repoInfo, { class: 'container' });
             createAndAppend('span', container, { text: label });
             createAndAppend('span', container, { text: value });
           };
