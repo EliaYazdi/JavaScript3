@@ -2,8 +2,8 @@
 
 {
   function fetchJson(url) {
-    return new promise((resolve, reject) => {
-      const xhr = newXMLHTTPRequest();
+    return new Promise((resolve, reject) => {
+      const xhr = newXMLHttpRequest();
       xhr.open('GET', url);
       xhr.responseType = 'json';
       xhr.onload = () => {
@@ -32,14 +32,27 @@
     return elem;
   }
 
-  function main(url) {
-    fetch(url)
-      .then(data => {
-        data.json()
+  function getContributorInformation(contribsUrl, contribs) {
+    fetch(contribsUrl)
+      .then(data => data.json())
+      .then((jsonData) => {
+        jsonData.forEach(contributor => {
+          createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
+          createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
+          createAndAppend('div', contribs, { text: contributor.contributions })
+        })
+      })
+      .catch((err) => {
+        const root = document.getElementById('root');
+        createAndAppend('div', contribs, { text: err.message, class: 'alert-error' })
       })
 
+  }
+
+  function main(url) {
+    fetch(url)
+      .then(data => data.json())
       .then(json => {
-        console.log(json)
         const root = document.getElementById('root');
         const select = createAndAppend('select', root, { class: 'select' });
         createAndAppend('option', select, { text: 'Choose your favorite repo' });
@@ -52,12 +65,8 @@
           select.addEventListener('change', evt => {
             const selectedRepo = evt.target.value;
             const repo = json.filter(r => r.name == selectedRepo)[0];
-            console.log(repo);
             repoInfo.innerHTML = '';
             contribs.innerHTML = '';
-
-
-
             const addInfo = (label, value) => {
               const container = createAndAppend('div', repoInfo);
               createAndAppend('span', container, { text: label });
@@ -68,21 +77,14 @@
             addInfo('Number of forks: ', repo.forks);
             addInfo('Updated: ', repo.updated_at)
             const contribsUrl = repo.contributors_url;
-            fetchJSON(contribsUrl)
-              .then(data.forEach(contributor => {
+            getContributorInformation(contribsUrl, contribs)
 
-                createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
-                createAndAppend('img', contribs, { src: contributor.avatar_url, height: 100, widtth: 100, id: 'img' })
-              }))
           })
-
-
-            .catch(err => {
-              createAndAppend('div', root, { text: err.message, class: 'alert-error' });
-            });
         })
-
-
+      })
+      .catch((err) => {
+        const root = document.getElementById('root');
+        createAndAppend('div', root, { text: err.message, class: 'alert-error' })
       })
 
   }
