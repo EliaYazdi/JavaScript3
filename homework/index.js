@@ -59,28 +59,28 @@
         json.forEach(repo => {
           const name = repo.name;
           createAndAppend('option', select, { text: name });
-
-          const repoInfo = createAndAppend('div', root);
-          const contribs = createAndAppend('div', root);
-          select.addEventListener('change', evt => {
-            const selectedRepo = evt.target.value;
-            const repo = json.filter(r => r.name == selectedRepo)[0];
-            repoInfo.innerHTML = '';
-            contribs.innerHTML = '';
-            const addInfo = (label, value) => {
-              const container = createAndAppend('div', repoInfo);
-              createAndAppend('span', container, { text: label });
-              createAndAppend('span', container, { text: value });
-            };
-            addInfo('Name: ', repo.name);
-            addInfo('Desciption: ', repo.description);
-            addInfo('Number of forks: ', repo.forks);
-            addInfo('Updated: ', repo.updated_at)
-            const contribsUrl = repo.contributors_url;
-            getContributorInformation(contribsUrl, contribs)
-
-          })
         })
+        const repoInfo = createAndAppend('div', root);
+        const contribs = createAndAppend('div', root);
+        select.addEventListener('change', evt => {
+          const selectedRepo = evt.target.value;
+          const repo = json.filter(r => r.name == selectedRepo)[0];
+          repoInfo.innerHTML = '';
+          contribs.innerHTML = '';
+          const addInfo = (label, value) => {
+            const container = createAndAppend('div', repoInfo);
+            createAndAppend('span', container, { text: label });
+            createAndAppend('span', container, { text: value });
+          };
+          addInfo('Name: ', repo.name);
+          addInfo('Desciption: ', repo.description);
+          addInfo('Number of forks: ', repo.forks);
+          addInfo('Updated: ', repo.updated_at)
+          const contribsUrl = repo.contributors_url;
+          getContributorInformation(contribsUrl, contribs)
+
+        })
+
       })
       .catch((err) => {
         const root = document.getElementById('root');
