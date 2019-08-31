@@ -65,7 +65,7 @@
         const root = document.getElementById('root');
         const select = createAndAppend('select', root, { class: 'select' });
         createAndAppend('option', select, { text: 'Choose your favorite repo' });
-        let sorted = json.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()));
+        let sorted = json.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1);
         sorted.forEach(repo => {
           const name = repo.name;
           createAndAppend('option', select, { text: name });
