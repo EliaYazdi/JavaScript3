@@ -64,7 +64,7 @@
       .then(json => {
         const root = document.getElementById('root');
         const select = createAndAppend('select', root, { class: 'select' });
-        createAndAppend('option', select, { text: 'Choose your favorite repo' });
+        // createAndAppend('option', select, { text: 'Choose your favorite repo' });
         let sorted = json.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1);
         sorted.forEach(repo => {
           const name = repo.name;
@@ -76,8 +76,13 @@
         select.addEventListener('change', evt => {
           const selectedRepo = evt.target.value;
           const repo = json.filter(r => r.name == selectedRepo)[0];
+          getallInfo(repo, repoInfo, contribs)
+        })
+
+        function getallInfo(repo, repoInfo, contribs) {
           repoInfo.innerHTML = '';
           contribs.innerHTML = '';
+
           const addInfo = (label, value) => {
             const container = createAndAppend('div', repoInfo, { class: 'container' });
             createAndAppend('span', container, { text: label });
@@ -88,15 +93,18 @@
           addInfo('Number of forks: ', repo.forks);
           addInfo('Updated: ', repo.updated_at)
           const contribsUrl = repo.contributors_url;
-          getContributorInformation(contribsUrl, contribs)
+          getContributorInformation(contribsUrl, contribs);
 
-        })
-
+        };
+        let firstRepo = sorted[1];
+        getallInfo(firstRepo, repoInfo, contribs);
       })
+
       .catch((err) => {
         const root = document.getElementById('root');
         createAndAppend('div', root, { text: err.message, class: 'alert-error' })
       })
+
 
   }
   const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
