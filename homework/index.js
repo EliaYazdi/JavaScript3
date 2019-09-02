@@ -29,18 +29,66 @@
     });
     return elem;
   }
-
+  //get repos
   function main(url) {
-    fetchJSON(url, (err, repositories) => {
+    fetchJSON(url, (err, data) => {
       const root = document.getElementById('root');
       if (err) {
         createAndAppend('div', root, { text: err.message, class: 'alert-error' });
-        return;
+      } else {
+        //createAndAppend('pre', root, { text: JSON.stringify(data, null, 2) });
+        const header = createAndAppend('header', root, { class: 'header' });
+        const h1 = createAndAppend('h1', header, { text: 'FooCoding Repos', class: 'h1' });
+        const select = createAndAppend('select', header, { class: 'select' });
+        createAndAppend('option', select, { text: 'Choose your favorite repo' });
+        data.forEach(repo => {
+          const name = repo.name;
+          createAndAppend('option', select, { text: name });
+        });
+        const container = createAndAppend('div', root, { class: 'container' });
+        const repoInfo = createAndAppend('div', container, { class: 'left-div' });
+        const contribs = createAndAppend('div', container, { class: 'right-div' });
+        select.onchange = evt => {
+          const selectedRepo = evt.target.value;
+          const repo = data.filter(r => r.name == selectedRepo)[0];
+          console.log(repo);
+          repoInfo.innerHTML = '';
+          contribs.innerHTML = '';
+
+
+
+          const addInfo = (label, value) => {
+            const repoContainer = createAndAppend('div', repoInfo);
+            createAndAppend('span', repoContainer, { text: label });
+            createAndAppend('span', repoContainer, { text: value });
+          };
+          addInfo('Name: ', repo.name);
+          addInfo('Desciption: ', repo.description);
+          addInfo('Number of forks: ', repo.forks);
+          addInfo('Updated: ', repo.updated_at);
+
+          const contribsUrl = repo.contributors_url;
+          fetchJSON(contribsUrl, (err, contributors) => {
+            if (err) {
+              createAndAppend('div', root, { text: err.message, class: 'alert-error' });
+            } else {
+              contributors.forEach(contributor => {
+                const eachContrib = createAndAppend('div', contribs, { class: 'eachcontrib' })
+                const contribNames = createAndAppend('a', eachContrib, { text: contributor.login, class: 'contributor' })
+                contribNames.href = contributor.html_url;
+
+                createAndAppend('span', eachContrib, { text: contributor.contributions, class: 'contributions' })
+                createAndAppend('img', eachContrib, { src: contributor.avatar_url, height: 100, width: 100, id: 'img' })
+              })
+
+            };
+          });
+        };
       }
-      createAndAppend('pre', root, { text: JSON.stringify(repositories, null, 2) });
     });
   }
 
   const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
+
   window.onload = () => main(HYF_REPOS_URL);
 }
