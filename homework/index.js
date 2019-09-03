@@ -24,7 +24,7 @@ async function main(url) {
     const root = document.getElementById('root');
     const select = createAndAppend('select', root, { class: 'select' });
     createAndAppend('option', select, { text: 'Choose your favorite repo' });
-    let sorted = json.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()));
+    let sorted = json.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1);
 
     sorted.forEach(repo => {
       const name = repo.name;
@@ -32,7 +32,7 @@ async function main(url) {
     })
     const wraper = createAndAppend('div', root, { class: 'wraper' });
     const repoInfo = createAndAppend('div', wraper, { class: 'repoinfo' });
-    const contribs = createAndAppend('div', wraper, { class: 'contribs' });
+    let contribs = createAndAppend('div', wraper, { id: 'contribsid' });
 
     select.addEventListener('change', evt => {
       const selectedRepo = evt.target.value;
@@ -59,18 +59,25 @@ async function main(url) {
   }
 
   async function getContributorInformation(data) {
+    const root = document.getElementById('root');
+    const wraper = createAndAppend('div', root, { class: 'wraper' });
+    let contribs = createAndAppend('div', wraper, { class: 'contribs' });
+    contribs.innerHTML = 'Contributors:';
     try {
-      const contribs = await fetch(data.contributors_url);
-      const jsonData = await contribs.json();
+      const contribsUrl = await fetch(data.contributors_url);
+      const jsonData = await contribsUrl.json();
 
 
       jsonData.forEach(contributor => {
+
+        document.getElementById('contribsid');
         createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
         createAndAppend('img', contribs, { src: contributor.avatar_url, height: 150, widtth: 150, id: 'img' })
         createAndAppend('div', contribs, { text: contributor.contributions })
       })
     } catch (err) {
-      const root = document.getElementById('root');
+
+
       createAndAppend('div', contribs, { text: err.message, class: 'alert-error' })
     }
   }
