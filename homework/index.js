@@ -37,7 +37,7 @@ async function main(url) {
     select.addEventListener('change', evt => {
       const selectedRepo = evt.target.value;
       const repo = json.filter(r => r.name == selectedRepo)[0];
-      getContributorInformation();
+      const repocontrib = json.filter(r => r.contributors == selectedRepo)[0];
       repoInfo.innerHTML = '';
       contribs.innerHTML = '';
       const addInfo = (label, value) => {
@@ -49,7 +49,8 @@ async function main(url) {
       addInfo('Desciption: ', repo.description);
       addInfo('Number of forks: ', repo.forks);
       addInfo('Updated: ', repo.updated_at)
-
+      const contributorsUrl = "https://api.github.com/repos/HackYourFuture/AngularJS/contributors";
+      getContributorInformation(contributorsUrl);
     })
 
   }
@@ -64,6 +65,7 @@ async function main(url) {
     let contribs = createAndAppend('div', wraper, { class: 'contribs' });
     contribs.innerHTML = 'Contributors:';
     try {
+
       const contribsUrl = await fetch(data.contributors_url);
       const jsonData = await contribsUrl.json();
 
