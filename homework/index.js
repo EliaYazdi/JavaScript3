@@ -19,7 +19,7 @@ function createAndAppend(name, parent, options = {}) {
 
 async function main(url) {
 
-
+  createAndAppend('h1', root, { class: 'h1', text: 'Hack Your Future Repositories' })
   try {
     const response = await fetch(url);
     const json = await response.json();
@@ -70,7 +70,7 @@ async function main(url) {
   contribs.innerHTML = 'Contributors';
 
   async function getContributorInformation(data) {
-
+    contribs.innerHTML = '';
     try {
 
       const contribsUrl = await fetch(data.contributors_url);
