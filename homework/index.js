@@ -1,94 +1,90 @@
 'use strict';
 
-{
-  function fetchJSON(url, cb) {
-    const xhr = new XMLHttpRequest();
-    xhr.open('GET', url);
-    xhr.responseType = 'json';
-    xhr.onload = () => {
-      if (xhr.status >= 200 && xhr.status <= 299) {
-        cb(null, xhr.response);
-      } else {
-        cb(new Error(`Network error: ${xhr.status} - ${xhr.statusText}`));
-      }
-    };
-    xhr.onerror = () => cb(new Error('Network request failed'));
-    xhr.send();
-  }
 
-  function createAndAppend(name, parent, options = {}) {
-    const elem = document.createElement(name);
-    parent.appendChild(elem);
-    Object.keys(options).forEach(key => {
-      const value = options[key];
-      if (key === 'text') {
-        elem.textContent = value;
-      } else {
-        elem.setAttribute(key, value);
-      }
-    });
-    return elem;
-  }
-  //get repos
-  function main(url) {
-    fetchJSON(url, (err, data) => {
-      const root = document.getElementById('root');
-      if (err) {
-        createAndAppend('div', root, { text: err.message, class: 'alert-error' });
-      } else {
-        //createAndAppend('pre', root, { text: JSON.stringify(data, null, 2) });
-        const header = createAndAppend('header', root, { class: 'header' });
-        const h1 = createAndAppend('h1', header, { text: 'FooCoding Repos', class: 'h1' });
-        const select = createAndAppend('select', header, { class: 'select' });
-        createAndAppend('option', select, { text: 'Choose your favorite repo' });
-        data.forEach(repo => {
-          const name = repo.name;
-          createAndAppend('option', select, { text: name });
-        });
-        const container = createAndAppend('div', root, { class: 'container' });
-        const repoInfo = createAndAppend('div', container, { class: 'left-div' });
-        const contribs = createAndAppend('div', container, { class: 'right-div' });
-        select.onchange = evt => {
-          const selectedRepo = evt.target.value;
-          const repo = data.filter(r => r.name == selectedRepo)[0];
-          console.log(repo);
-          repoInfo.innerHTML = '';
-          contribs.innerHTML = '';
-
-
-
-          const addInfo = (label, value) => {
-            const repoContainer = createAndAppend('div', repoInfo);
-            createAndAppend('span', repoContainer, { text: label });
-            createAndAppend('span', repoContainer, { text: value });
-          };
-          addInfo('Name: ', repo.name);
-          addInfo('Desciption: ', repo.description);
-          addInfo('Number of forks: ', repo.forks);
-          addInfo('Updated: ', repo.updated_at);
-
-          const contribsUrl = repo.contributors_url;
-          fetchJSON(contribsUrl, (err, contributors) => {
-            if (err) {
-              createAndAppend('div', root, { text: err.message, class: 'alert-error' });
-            } else {
-              contributors.forEach(contributor => {
-                const eachContrib = createAndAppend('div', contribs, { class: 'eachcontrib' })
-                const contribNames = createAndAppend('a', eachContrib, { text: contributor.login, class: 'contributor' })
-                contribNames.href = contributor.html_url;
-
-                createAndAppend('span', eachContrib, { text: contributor.contributions, class: 'contributions' })
-                createAndAppend('img', eachContrib, { src: contributor.avatar_url, height: 100, width: 100, id: 'img' })
-              })
-
-            };
-          });
-        };
-      }
-    });
-  }
-
-  const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
-
-  window.onload = () => main(HYF_REPOS_URL);
+function createAndAppend(name, parent, options = {}) {
+  const elem = document.createElement(name);
+  parent.appendChild(elem);
+  Object.keys(options).forEach(key => {
+    const value = options[key];
+    if (key === 'text') {
+      elem.textContent = value;
+    } else {
+      elem.setAttribute(key, value);
+    }
+  });
+  return elem;
 }
+
+
+
+async function main(url) {
+
+  createAndAppend('h1', root, { class: 'h1', text: 'Hack Your Future Repositories' })
+  try {
+    const response = await fetch(url);
+    const json = await response.json();
+    const root = document.getElementById('root');
+    const select = createAndAppend('select', root, { class: 'select' });
+    createAndAppend('option', select, { text: 'Choose your favorite repo' });
+    let sorted = json.sort((a, b) => (a.name.toLowerCase() > b.name.toLowerCase()) ? 1 : -1);
+
+    sorted.forEach(repo => {
+      const name = repo.name;
+
+      createAndAppend('option', select, { text: name });
+    })
+
+
+    select.addEventListener('change', evt => {
+      const selectedRepo = evt.target.value;
+      const repo = json.filter(r => r.name == selectedRepo)[0];
+      getContributorInformation(repo);
+      repoData();
+
+      function repoData() {
+        repoInfo.innerHTML = 'Repository Information:';
+
+        const addInfo = (label, value) => {
+          const container = createAndAppend('div', repoInfo, { class: 'container' });
+          createAndAppend('span', container, { text: label });
+          createAndAppend('span', container, { text: value });
+        };
+        addInfo('Name: ', repo.name);
+        addInfo('Desciption: ', repo.description);
+        addInfo('Number of forks: ', repo.forks);
+        addInfo('Updated: ', repo.updated_at)
+        const contributorsUrl = "https://api.github.com/repos/HackYourFuture/AngularJS/contributors";
+      }
+    })
+
+
+  }
+  catch (err) {
+    const root = document.getElementById('root');
+    createAndAppend('div', root, { text: err.message, class: 'alert-error' })
+  }
+
+  const wraper = createAndAppend('div', root, { class: 'wraper' });
+  const repoInfo = createAndAppend('div', wraper, { class: 'repoinfo' });
+  let contribs = createAndAppend('div', wraper, { class: 'contribs' });
+  contribs.innerHTML = 'Contributors';
+
+  async function getContributorInformation(data) {
+    contribs.innerHTML = '';
+    try {
+
+      const contribsUrl = await fetch(data.contributors_url);
+      const contribsJson = await contribsUrl.json();
+      contribsJson.forEach(contributor => {
+
+        createAndAppend('div', contribs, { text: contributor.login, class: 'contributor' })
+        createAndAppend('img', contribs, { src: contributor.avatar_url, height: 150, widtth: 150, id: 'img' })
+        createAndAppend('div', contribs, { text: contributor.contributions })
+      })
+    } catch (err) {
+      createAndAppend('div', contribs, { text: err.message, class: 'alert-error' })
+    }
+  }
+}
+const HYF_REPOS_URL = 'https://api.github.com/orgs/HackYourFuture/repos?per_page=100';
+window.onload = () => main(HYF_REPOS_URL);
