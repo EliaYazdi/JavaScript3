@@ -59,6 +59,7 @@
   }
 
   function main(url) {
+
     fetch(url)
       .then(data => data.json())
       .then(json => {
@@ -74,6 +75,7 @@
         const repoInfo = createAndAppend('div', wraper, { class: 'repoinfo' });
         const contribs = createAndAppend('div', wraper, { class: 'contribs' });
         select.addEventListener('change', evt => {
+
           const selectedRepo = evt.target.value;
           const repo = json.filter(r => r.name == selectedRepo)[0];
           getallInfo(repo, repoInfo, contribs)
@@ -84,13 +86,16 @@
           contribs.innerHTML = '';
 
           const addInfo = (label, value) => {
+
             const container = createAndAppend('div', repoInfo, { class: 'container' });
             createAndAppend('span', container, { text: label });
             createAndAppend('span', container, { text: value });
+
           };
           addInfo('Name: ', repo.name);
           addInfo('Desciption: ', repo.description);
           addInfo('Number of forks: ', repo.forks);
+
           addInfo('Updated: ', repo.updated_at)
           const contribsUrl = repo.contributors_url;
           getContributorInformation(contribsUrl, contribs);
@@ -104,6 +109,8 @@
         const root = document.getElementById('root');
         createAndAppend('div', root, { text: err.message, class: 'alert-error' })
       })
+
+
 
 
   }

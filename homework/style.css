@@ -9,12 +9,15 @@ body {
   display: flex;
    flex-direction: column;
   align-items: flex-start;
+
   justify-content: center;
 }
 .header {
   background-color: #444;
   width: 100%;
+
 }
+
 .h1 {
   text-align: center;
 
@@ -24,12 +27,15 @@ body {
   flex-direction: row;
   align-items: flex-start;
   margin: 1rem;
+
  
+
 }
 .eachContrib {
     display: flex;
   flex-direction: row;
 }
+
 
 .wraper {
   display: flex;
@@ -45,7 +51,6 @@ body {
  display: flex;
  flex-direction: column;
  align-items: flex-start;
-
 }
 .select {
     display: flex;
