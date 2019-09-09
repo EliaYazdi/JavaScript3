@@ -13,30 +13,46 @@ class App {
    * @param {string} url The GitHub URL for obtaining the organization's repositories.
    */
   async initialize(url) {
-    // Add code here to initialize your app
-    // 1. Create the fixed HTML elements of your page
+    this.setupDOMElement()
+
     // 2. Make an initial XMLHttpRequest using Util.fetchJSON() to populate your <select> element
-
-    const root = document.getElementById('root');
-    const header = Util.createAndAppend('header', root, { class: 'header' });
-    this.mainContainer = Util.createAndAppend('div', root, { id: 'container' });
-
     try {
       const repos = await Util.fetchJSON(url);
       this.repos = repos.map(repo => new Repository(repo));
+      this.addRepoNamesToSelect();
+
       // TODO: add your own code here
     } catch (error) {
       this.renderError(error);
     }
   }
 
+  addRepoNamesToSelect() {
+    const selectEl = document.getElementById('repo-select')
+    for (const repo of this.repos) {
+      Util.createAndAppend('option', selectEl, { text: repo.name() })
+    }
+    selectEl.addEventListener('change', event => {
+      const selectedRepoName = event.target.value;
+      const selectedRepo = this.repos.filter(repo => repo.name() === selectedRepoName)[0]
+      selectedRepo.render(document.getElementById('repo-info'));
+      this.fetchContributorsAndRender(selectedRepo)
+    });
+
+  }
+  setupDOMElement() {
+    const root = document.getElementById('root');
+    Util.createAndAppend('select', root, { id: 'repo-select' })
+    Util.createAndAppend('div', root, { id: 'repo-info' })
+    Util.createAndAppend('div', root, { id: 'repo-contributors' })
+  }
   /**
    * Removes all child elements from a container element
    * @param {*} container Container element to clear
    */
-  clearContainer() {
-    while (this.mainContainer.firstChild) {
-      this.mainContainer.removeChild(this.mainContainer.firstChild);
+  static clearContainer(container) {
+    while (container.firstChild) {
+      container.removeChild(container.firstChild);
     }
   }
 
@@ -45,21 +61,19 @@ class App {
    * repo and its contributors as HTML elements in the DOM.
    * @param {object} repo The selected repository object
    */
-  async selectRepository(repo) {
+  async fetchContributorsAndRender(repo) {
     try {
-      this.clearContainer();
+
       const contributors = await repo.fetchContributors();
 
-      const repoContainer = Util.createAndAppend('div', this.mainContainer);
-      const contributorContainer = Util.createAndAppend('div', this.mainContainer);
+      const container = document.getElementById('repo-contributors');
+      App.clearContainer(container);
 
-      const contributorList = Util.createAndAppend('ul', contributorContainer);
 
-      repo.render(repoContainer);
 
       contributors
         .map(contributor => new Contributor(contributor))
-        .forEach(contributor => contributor.render(contributorList));
+        .forEach(contributor => contributor.render(container));
     } catch (error) {
       this.renderError(error);
     }

@@ -13,10 +13,13 @@ class Repository {
    * @param {HTMLElement} container The container element in which to render the repository.
    */
   render(container) {
-    // TODO: replace the next line with your code.
-    Util.createAndAppend('pre', container, { text: JSON.stringify(this.repository, null, 2) });
+    App.clearContainer(container);
+    Util.createAndAppend('h3', container, { text: 'Repository Information:' });
+    Util.createAndAppend('p', container, { text: 'Name: ' + this.name() });
+    Util.createAndAppend('p', container, { text: 'Forks: ' + this.repository.forks });
+    Util.createAndAppend('p', container, { text: 'Created on: ' + this.repository.created_at });
+    Util.createAndAppend('p', container, { text: 'Description: ' + this.repository.description });
   }
-
   /**
    * Returns an array of contributors as a promise
    */
